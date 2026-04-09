@@ -1,0 +1,176 @@
+{
+	"info": {
+		"name": "Parameta - Servicio Empleados",
+		"description": "Coleccion de pruebas para el servicio REST de empleados.\n\nBase URL: http://localhost:8080",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		}
+	],
+	"item": [
+		{
+			"name": "Caso feliz — Registrar empleado valido",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/empleados?nombres=Ronald&apellidos=Cipagauta&tipoDocumento=CC&numeroDocumento=1023456789&fechaNacimiento=1990-05-10&fechaVinculacion=2020-01-15&cargo=Backend Developer&salario=5000000",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "empleados"],
+					"query": [
+						{ "key": "nombres", "value": "Ronald" },
+						{ "key": "apellidos", "value": "Cipagauta" },
+						{ "key": "tipoDocumento", "value": "CC" },
+						{ "key": "numeroDocumento", "value": "1023456789" },
+						{ "key": "fechaNacimiento", "value": "1990-05-10" },
+						{ "key": "fechaVinculacion", "value": "2020-01-15" },
+						{ "key": "cargo", "value": "Backend Developer" },
+						{ "key": "salario", "value": "5000000" }
+					]
+				},
+				"description": "Registra un empleado mayor de edad con todos los campos validos.\n\nEsperado: 200 OK con edad y tiempoVinculacion calculados."
+			},
+			"response": []
+		},
+		{
+			"name": "Error — Menor de edad",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/empleados?nombres=Juan&apellidos=Perez&tipoDocumento=TI&numeroDocumento=999888&fechaNacimiento=2015-06-20&fechaVinculacion=2024-01-01&cargo=Becario&salario=1000000",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "empleados"],
+					"query": [
+						{ "key": "nombres", "value": "Juan" },
+						{ "key": "apellidos", "value": "Perez" },
+						{ "key": "tipoDocumento", "value": "TI" },
+						{ "key": "numeroDocumento", "value": "999888" },
+						{ "key": "fechaNacimiento", "value": "2015-06-20" },
+						{ "key": "fechaVinculacion", "value": "2024-01-01" },
+						{ "key": "cargo", "value": "Becario" },
+						{ "key": "salario", "value": "1000000" }
+					]
+				},
+				"description": "Intenta registrar un empleado menor de 18 anios.\n\nEsperado: 400 Bad Request con mensaje 'El empleado debe ser mayor de edad'."
+			},
+			"response": []
+		},
+		{
+			"name": "Error — Campos vacios",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/empleados?nombres=&apellidos=&tipoDocumento=&numeroDocumento=&fechaNacimiento=1990-01-01&fechaVinculacion=2020-01-01&cargo=&salario=1",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "empleados"],
+					"query": [
+						{ "key": "nombres", "value": "" },
+						{ "key": "apellidos", "value": "" },
+						{ "key": "tipoDocumento", "value": "" },
+						{ "key": "numeroDocumento", "value": "" },
+						{ "key": "fechaNacimiento", "value": "1990-01-01" },
+						{ "key": "fechaVinculacion", "value": "2020-01-01" },
+						{ "key": "cargo", "value": "" },
+						{ "key": "salario", "value": "1" }
+					]
+				},
+				"description": "Envia campos de texto vacios.\n\nEsperado: 400 con lista de errores de validacion."
+			},
+			"response": []
+		},
+		{
+			"name": "Error — Formato de fecha invalido",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/empleados?nombres=Ana&apellidos=Lopez&tipoDocumento=CC&numeroDocumento=555&fechaNacimiento=10-05-1990&fechaVinculacion=2020-01-01&cargo=QA&salario=3000000",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "empleados"],
+					"query": [
+						{ "key": "nombres", "value": "Ana" },
+						{ "key": "apellidos", "value": "Lopez" },
+						{ "key": "tipoDocumento", "value": "CC" },
+						{ "key": "numeroDocumento", "value": "555" },
+						{ "key": "fechaNacimiento", "value": "10-05-1990" },
+						{ "key": "fechaVinculacion", "value": "2020-01-01" },
+						{ "key": "cargo", "value": "QA" },
+						{ "key": "salario", "value": "3000000" }
+					]
+				},
+				"description": "Envia fechaNacimiento en formato dd-MM-yyyy en lugar de yyyy-MM-dd.\n\nEsperado: 400 con mensaje de formato invalido."
+			},
+			"response": []
+		},
+		{
+			"name": "Error — Salario negativo",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/empleados?nombres=Carlos&apellidos=Ruiz&tipoDocumento=CC&numeroDocumento=111&fechaNacimiento=1985-03-15&fechaVinculacion=2023-06-01&cargo=Dev&salario=-500",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "empleados"],
+					"query": [
+						{ "key": "nombres", "value": "Carlos" },
+						{ "key": "apellidos", "value": "Ruiz" },
+						{ "key": "tipoDocumento", "value": "CC" },
+						{ "key": "numeroDocumento", "value": "111" },
+						{ "key": "fechaNacimiento", "value": "1985-03-15" },
+						{ "key": "fechaVinculacion", "value": "2023-06-01" },
+						{ "key": "cargo", "value": "Dev" },
+						{ "key": "salario", "value": "-500" }
+					]
+				},
+				"description": "Envia salario negativo.\n\nEsperado: 400 con mensaje 'salario debe ser mayor a cero'."
+			},
+			"response": []
+		},
+		{
+			"name": "Error — Vinculacion anterior a nacimiento",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/empleados?nombres=Maria&apellidos=Torres&tipoDocumento=CC&numeroDocumento=222&fechaNacimiento=1995-08-20&fechaVinculacion=1990-01-01&cargo=Analista&salario=4000000",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "empleados"],
+					"query": [
+						{ "key": "nombres", "value": "Maria" },
+						{ "key": "apellidos", "value": "Torres" },
+						{ "key": "tipoDocumento", "value": "CC" },
+						{ "key": "numeroDocumento", "value": "222" },
+						{ "key": "fechaNacimiento", "value": "1995-08-20" },
+						{ "key": "fechaVinculacion", "value": "1990-01-01" },
+						{ "key": "cargo", "value": "Analista" },
+						{ "key": "salario", "value": "4000000" }
+					]
+				},
+				"description": "Envia fecha de vinculacion anterior a la fecha de nacimiento.\n\nEsperado: 400 con mensaje 'fechaVinculacion no puede ser anterior a fechaNacimiento'."
+			},
+			"response": []
+		},
+		{
+			"name": "WSDL — Verificar contrato SOAP",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/services/empleados?wsdl",
+					"host": ["{{baseUrl}}"],
+					"path": ["services", "empleados"],
+					"query": [
+						{ "key": "wsdl", "value": null }
+					]
+				},
+				"description": "Obtiene el WSDL del servicio SOAP.\n\nEsperado: 200 con XML del contrato WSDL."
+			},
+			"response": []
+		}
+	]
+}
