@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parameta — Registro de Empleados</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+
+        .header h1 { font-size: 1.6rem; font-weight: 600; letter-spacing: 0.5px; }
+        .header p { margin-top: 0.4rem; font-size: 0.9rem; opacity: 0.75; }
+
+        .container {
+            max-width: 960px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: #16213e;
+            border-bottom: 2px solid #e8eaf0;
+            padding-bottom: 0.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full { grid-column: 1 / -1; }
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 0.3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            padding: 0.65rem 0.8rem;
+            border: 1.5px solid #dce0e8;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fafbfc;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #0f3460;
+            box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.1);
+            background: white;
+        }
+
+        input.error { border-color: #e74c3c; background: #fef5f5; }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0f3460, #16213e);
+            color: white;
+        }
+
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15,52,96,0.3); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .btn-secondary {
+            background: #e8eaf0;
+            color: #555;
+        }
+
+        .btn-secondary:hover { background: #dce0e8; }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+
+        .alert {
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .alert-error {
+            background: #fef5f5;
+            border: 1px solid #f5c6cb;
+            color: #c0392b;
+        }
+
+        .alert-success {
+            background: #f0faf0;
+            border: 1px solid #c3e6cb;
+            color: #27ae60;
+        }
+
+        .response-card { display: none; }
+
+        .response-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        .response-field {
+            padding: 0.8rem;
+            background: #f8f9fb;
+            border-radius: 8px;
+            border-left: 3px solid #0f3460;
+        }
+
+        .response-field .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #888;
+            margin-bottom: 0.2rem;
+        }
+
+        .response-field .value {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .period-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            margin-top: 1.2rem;
+        }
+
+        .period-card {
+            background: linear-gradient(135deg, #0f3460, #16213e);
+            color: white;
+            border-radius: 10px;
+            padding: 1.2rem;
+            text-align: center;
+        }
+
+        .period-card h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-bottom: 0.8rem;
+        }
+
+        .period-values {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .period-item .number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .period-item .unit {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            opacity: 0.7;
+            letter-spacing: 0.5px;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .json-toggle {
+            margin-top: 1rem;
+            text-align: right;
+        }
+
+        .json-toggle button {
+            background: none;
+            border: none;
+            color: #0f3460;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .json-raw {
+            display: none;
+            margin-top: 0.8rem;
+            background: #1a1a2e;
+            color: #a8e6cf;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .soap-badge {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #aaa;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 640px) {
+            .form-grid, .response-grid, .period-cards { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Parameta S.A.S.</h1>
+    <p>Servicio de Registro de Empleados &mdash; REST + SOAP + MySQL</p>
+</div>
+
+<div class="container">
+
+    <div id="alertBox" class="alert"></div>
+
+    <div class="card">
+        <h2>Registrar Empleado</h2>
+        <form id="employeeForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="nombres">Nombres</label>
+                    <input type="text" id="nombres" placeholder="Ej: Ronald" required>
+                </div>
+                <div class="form-group">
+                    <label for="apellidos">Apellidos</label>
+                    <input type="text" id="apellidos" placeholder="Ej: Cipagauta" required>
+                </div>
+                <div class="form-group">
+                    <label for="tipoDocumento">Tipo de Documento</label>
+                    <select id="tipoDocumento" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="CC">Cedula de Ciudadania</option>
+                        <option value="CE">Cedula de Extranjeria</option>
+                        <option value="TI">Tarjeta de Identidad</option>
+                        <option value="PP">Pasaporte</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="numeroDocumento">Numero de Documento</label>
+                    <input type="text" id="numeroDocumento" placeholder="Ej: 1023456789" required>
+                </div>
+                <div class="form-group">
+                    <label for="fechaNacimiento">Fecha de Nacimiento</label>
+                    <input type="date" id="fechaNacimiento" required>
+                </div>
+                <div class="form-group">
+                    <label for="fechaVinculacion">Fecha de Vinculacion</label>
+                    <input type="date" id="fechaVinculacion" required>
+                </div>
+                <div class="form-group">
+                    <label for="cargo">Cargo</label>
+                    <input type="text" id="cargo" placeholder="Ej: Backend Developer" required>
+                </div>
+                <div class="form-group">
+                    <label for="salario">Salario</label>
+                    <input type="number" id="salario" min="1" step="any" placeholder="Ej: 5000000" required>
+                </div>
+            </div>
+            <div class="actions">
+                <button type="button" class="btn btn-secondary" onclick="resetForm()">Limpiar</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <span id="btnText">Registrar</span>
+                    <div class="spinner" id="spinner"></div>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card response-card" id="responseCard">
+        <h2>
+            Empleado Registrado
+            <span class="soap-badge">Persistido via SOAP</span>
+        </h2>
+
+        <div class="response-grid">
+            <div class="response-field">
+                <div class="label">Nombres</div>
+                <div class="value" id="res-nombres"></div>
+            </div>
+            <div class="response-field">
+                <div class="label">Apellidos</div>
+                <div class="value" id="res-apellidos"></div>
+            </div>
+            <div class="response-field">
+                <div class="label">Documento</div>
+                <div class="value" id="res-documento"></div>
+            </div>
+            <div class="response-field">
+                <div class="label">Cargo</div>
+                <div class="value" id="res-cargo"></div>
+            </div>
+            <div class="response-field">
+                <div class="label">Salario</div>
+                <div class="value" id="res-salario"></div>
+            </div>
+            <div class="response-field">
+                <div class="label">Fecha Vinculacion</div>
+                <div class="value" id="res-vinculacion"></div>
+            </div>
+        </div>
+
+        <div class="period-cards">
+            <div class="period-card">
+                <h3>Edad Actual</h3>
+                <div class="period-values">
+                    <div class="period-item">
+                        <div class="number" id="edad-anios">0</div>
+                        <div class="unit">anios</div>
+                    </div>
+                    <div class="period-item">
+                        <div class="number" id="edad-meses">0</div>
+                        <div class="unit">meses</div>
+                    </div>
+                    <div class="period-item">
+                        <div class="number" id="edad-dias">0</div>
+                        <div class="unit">dias</div>
+                    </div>
+                </div>
+            </div>
+            <div class="period-card">
+                <h3>Tiempo de Vinculacion</h3>
+                <div class="period-values">
+                    <div class="period-item">
+                        <div class="number" id="vinc-anios">0</div>
+                        <div class="unit">anios</div>
+                    </div>
+                    <div class="period-item">
+                        <div class="number" id="vinc-meses">0</div>
+                        <div class="unit">meses</div>
+                    </div>
+                    <div class="period-item">
+                        <div class="number" id="vinc-dias">0</div>
+                        <div class="unit">dias</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="json-toggle">
+            <button onclick="toggleJson()">Ver respuesta JSON</button>
+        </div>
+        <pre class="json-raw" id="jsonRaw"></pre>
+    </div>
+
+</div>
+
+<div class="footer">
+    Ronald Cipagauta &mdash; Prueba Tecnica Parameta S.A.S.
+</div>
+
+<script>
+    const form = document.getElementById('employeeForm');
+    const alertBox = document.getElementById('alertBox');
+    const responseCard = document.getElementById('responseCard');
+    const submitBtn = document.getElementById('submitBtn');
+    const spinner = document.getElementById('spinner');
+    const btnText = document.getElementById('btnText');
+
+    const fields = ['nombres', 'apellidos', 'tipoDocumento', 'numeroDocumento',
+                    'fechaNacimiento', 'fechaVinculacion', 'cargo', 'salario'];
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAlert();
+        responseCard.style.display = 'none';
+
+        document.querySelectorAll('input.error, select.error').forEach(el => el.classList.remove('error'));
+
+        const params = new URLSearchParams();
+        let hasEmpty = false;
+
+        fields.forEach(f => {
+            const el = document.getElementById(f);
+            const val = el.value.trim();
+            if (!val) {
+                el.classList.add('error');
+                hasEmpty = true;
+            }
+            params.append(f, val);
+        });
+
+        if (hasEmpty) {
+            showAlert('Complete todos los campos antes de enviar.', 'error');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const res = await fetch('/api/empleados?' + params.toString());
+            const data = await res.json();
+
+            if (!res.ok) {
+                const msg = data.mensaje || 'Error desconocido';
+                const detalles = (data.detalles && data.detalles.length)
+                    ? '\n' + data.detalles.join('\n')
+                    : '';
+                showAlert(msg + detalles, 'error');
+                return;
+            }
+
+            renderResponse(data);
+        } catch (err) {
+            showAlert('No se pudo conectar al servidor. Verifique que la aplicacion este corriendo.', 'error');
+        } finally {
+            setLoading(false);
+        }
+    });
+
+    function renderResponse(data) {
+        document.getElementById('res-nombres').textContent = data.nombres;
+        document.getElementById('res-apellidos').textContent = data.apellidos;
+        document.getElementById('res-documento').textContent = data.tipoDocumento + ' ' + data.numeroDocumento;
+        document.getElementById('res-cargo').textContent = data.cargo;
+        document.getElementById('res-salario').textContent = '$' + Number(data.salario).toLocaleString('es-CO');
+        document.getElementById('res-vinculacion').textContent = data.fechaVinculacion;
+
+        document.getElementById('edad-anios').textContent = data.edad.anios;
+        document.getElementById('edad-meses').textContent = data.edad.meses;
+        document.getElementById('edad-dias').textContent = data.edad.dias;
+
+        document.getElementById('vinc-anios').textContent = data.tiempoVinculacion.anios;
+        document.getElementById('vinc-meses').textContent = data.tiempoVinculacion.meses;
+        document.getElementById('vinc-dias').textContent = data.tiempoVinculacion.dias;
+
+        document.getElementById('jsonRaw').textContent = JSON.stringify(data, null, 2);
+        document.getElementById('jsonRaw').style.display = 'none';
+
+        responseCard.style.display = 'block';
+        responseCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        showAlert('Empleado registrado exitosamente y persistido en MySQL via SOAP.', 'success');
+    }
+
+    function toggleJson() {
+        const el = document.getElementById('jsonRaw');
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function showAlert(msg, type) {
+        alertBox.textContent = msg;
+        alertBox.className = 'alert alert-' + type;
+        alertBox.style.display = 'block';
+        alertBox.style.whiteSpace = 'pre-line';
+        if (type === 'error') alertBox.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function hideAlert() {
+        alertBox.style.display = 'none';
+    }
+
+    function resetForm() {
+        form.reset();
+        hideAlert();
+        responseCard.style.display = 'none';
+        document.querySelectorAll('input.error, select.error').forEach(el => el.classList.remove('error'));
+    }
+
+    function setLoading(loading) {
+        submitBtn.disabled = loading;
+        spinner.style.display = loading ? 'block' : 'none';
+        btnText.textContent = loading ? 'Registrando...' : 'Registrar';
+    }
+</script>
+
+</body>
+</html>

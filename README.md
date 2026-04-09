@@ -1,6 +1,19 @@
 # Prueba Tecnica — Servicio de Empleados (Parameta S.A.S.)
 
+> **Esta rama (`feature/frontend`)** agrega una interfaz grafica web al servicio. La rama `main` contiene solo el backend (REST + SOAP + MySQL) sin frontend.
+
 Servicio Java que expone un endpoint **REST GET** para registrar empleados. La capa REST valida los datos, invoca un **servicio SOAP** (publicado por la misma aplicacion) y este ultimo persiste el empleado en **MySQL**. La respuesta REST incluye edad y tiempo de vinculacion calculados.
+
+## Interfaz Grafica
+
+Esta rama incluye un frontend web accesible en `http://localhost:8080` que permite:
+
+- Llenar el formulario de registro del empleado con validaciones visuales
+- Ver la respuesta del servidor con edad y tiempo de vinculacion en tarjetas visuales
+- Inspeccionar la respuesta JSON cruda
+- Visualizar errores de validacion directamente en la interfaz
+
+No requiere Node.js ni build frontend — es un HTML/CSS/JS estatico servido por Spring Boot.
 
 ## Stack
 
