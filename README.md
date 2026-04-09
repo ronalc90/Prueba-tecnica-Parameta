@@ -163,6 +163,11 @@ mvn test
 
 La rama [`feature/frontend`](https://github.com/ronalc90/Prueba-tecnica-Parameta/tree/feature/frontend) agrega una interfaz web visual para probar el servicio directamente desde el navegador en `http://localhost:8080`.
 
+<img width="947" height="701" alt="image" src="https://github.com/user-attachments/assets/24f0d6c2-8d28-4251-8329-4fefc0018e51" />
+
+
+<img width="1001" height="836" alt="image" src="https://github.com/user-attachments/assets/6f08a75e-344d-468d-8712-cffbc1fac166" />
+
 ```bash
 git checkout feature/frontend
 docker-compose up --build
