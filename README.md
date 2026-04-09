@@ -159,6 +159,16 @@ mvn test
 - **`Period.between`** para calcular edad y tiempo de vinculacion con la API estandar de Java.
 - **Docker Compose** para que el evaluador levante todo con un solo comando.
 
+## Interfaz Grafica (rama `feature/frontend`)
+
+La rama [`feature/frontend`](https://github.com/ronalc90/Prueba-tecnica-Parameta/tree/feature/frontend) agrega una interfaz web visual para probar el servicio directamente desde el navegador en `http://localhost:8080`.
+
+```bash
+git checkout feature/frontend
+docker-compose up --build
+# Abrir http://localhost:8080
+```
+
 ## Autor
 
 Ronald Cipagauta
