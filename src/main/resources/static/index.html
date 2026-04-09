@@ -527,11 +527,7 @@
             const data = await res.json();
 
             if (!res.ok) {
-                const msg = data.mensaje || 'Error desconocido';
-                const detalles = (data.detalles && data.detalles.length)
-                    ? '\n' + data.detalles.join('\n')
-                    : '';
-                showAlert(msg + detalles, 'error');
+                showApiError(data);
                 return;
             }
 
@@ -574,11 +570,56 @@
         el.style.display = el.style.display === 'none' ? 'block' : 'none';
     }
 
+    const fieldLabels = {
+        nombres: 'Nombres', apellidos: 'Apellidos', tipoDocumento: 'Tipo de Documento',
+        numeroDocumento: 'Numero de Documento', fechaNacimiento: 'Fecha de Nacimiento',
+        fechaVinculacion: 'Fecha de Vinculacion', cargo: 'Cargo', salario: 'Salario'
+    };
+
+    function showApiError(data) {
+        const detalles = data.detalles || [];
+        let html = '';
+
+        if (detalles.length > 0) {
+            html += '<div style="font-weight:600;margin-bottom:0.6rem;">Se encontraron los siguientes problemas:</div>';
+            html += '<ul style="list-style:none;padding:0;margin:0;">';
+            detalles.forEach(d => {
+                const parts = d.split(': ');
+                const field = parts[0];
+                const msg = parts.length > 1 ? humanizeMsg(parts.slice(1).join(': ')) : d;
+                const label = fieldLabels[field] || field;
+                html += '<li style="padding:0.35rem 0;display:flex;align-items:flex-start;gap:0.5rem;">' +
+                    '<span style="color:#e74c3c;font-size:1.1rem;line-height:1;">&#10005;</span>' +
+                    '<span><strong>' + esc(label) + ':</strong> ' + esc(msg) + '</span></li>';
+                // Resaltar campo en el formulario
+                const el = document.getElementById(field);
+                if (el) el.classList.add('error');
+            });
+            html += '</ul>';
+        } else {
+            html += '<div style="display:flex;align-items:center;gap:0.5rem;">' +
+                '<span style="color:#e74c3c;font-size:1.1rem;">&#10005;</span>' +
+                '<span>' + esc(data.mensaje || 'Error desconocido') + '</span></div>';
+        }
+
+        alertBox.innerHTML = html;
+        alertBox.className = 'alert alert-error';
+        alertBox.style.display = 'block';
+        alertBox.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function humanizeMsg(msg) {
+        // Limpiar mensajes tecnicos del backend
+        if (msg.includes('Failed to convert')) return 'Formato invalido. Use yyyy-MM-dd (ej: 1990-05-10).';
+        return msg;
+    }
+
     function showAlert(msg, type) {
-        alertBox.textContent = msg;
+        alertBox.innerHTML = '<div style="display:flex;align-items:center;gap:0.5rem;">' +
+            (type === 'success' ? '<span style="font-size:1.2rem;">&#10003;</span>' : '<span style="font-size:1.1rem;">&#10005;</span>') +
+            '<span>' + esc(msg) + '</span></div>';
         alertBox.className = 'alert alert-' + type;
         alertBox.style.display = 'block';
-        alertBox.style.whiteSpace = 'pre-line';
         if (type === 'error') alertBox.scrollIntoView({ behavior: 'smooth' });
     }
 
