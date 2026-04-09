@@ -1,6 +1,8 @@
 package com.parameta.empleados.service;
 
 import com.parameta.empleados.domain.Empleado;
+import com.parameta.empleados.domain.EmpleadoEntity;
+import com.parameta.empleados.domain.EmpleadoRepository;
 import com.parameta.empleados.rest.EmpleadoRequest;
 import com.parameta.empleados.rest.EmpleadoResponse;
 import com.parameta.empleados.soap.EmpleadoSoapService;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
 
 /**
  * Orquesta la regla de negocio: valida la edad mínima, delega la persistencia
@@ -21,10 +24,12 @@ public class EmpleadoService {
     private static final int EDAD_MINIMA = 18;
 
     private final EmpleadoSoapService soapClient;
+    private final EmpleadoRepository repository;
     private final Clock clock;
 
-    public EmpleadoService(EmpleadoSoapService soapClient, Clock clock) {
+    public EmpleadoService(EmpleadoSoapService soapClient, EmpleadoRepository repository, Clock clock) {
         this.soapClient = soapClient;
+        this.repository = repository;
         this.clock = clock;
     }
 
@@ -44,6 +49,23 @@ public class EmpleadoService {
 
         Period vinculacion = Period.between(req.getFechaVinculacion(), hoy);
         return toResponse(empleado, edad, vinculacion);
+    }
+
+    public List<EmpleadoResponse> listar() {
+        LocalDate hoy = LocalDate.now(clock);
+        return repository.findAll().stream()
+                .map(e -> {
+                    Period edad = Period.between(e.getFechaNacimiento(), hoy);
+                    Period vinculacion = Period.between(e.getFechaVinculacion(), hoy);
+                    return new EmpleadoResponse(
+                            e.getNombres(), e.getApellidos(), e.getTipoDocumento(),
+                            e.getNumeroDocumento(), e.getFechaNacimiento(), e.getFechaVinculacion(),
+                            e.getCargo(), e.getSalario(),
+                            new EmpleadoResponse.Periodo(edad.getYears(), edad.getMonths(), edad.getDays()),
+                            new EmpleadoResponse.Periodo(vinculacion.getYears(), vinculacion.getMonths(), vinculacion.getDays())
+                    );
+                })
+                .toList();
     }
 
     private Empleado toDto(EmpleadoRequest r) {

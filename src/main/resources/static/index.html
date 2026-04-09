@@ -267,6 +267,47 @@
             font-size: 0.8rem;
         }
 
+        .table-wrapper { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+
+        thead {
+            background: #16213e;
+            color: white;
+        }
+
+        th, td {
+            padding: 0.65rem 0.8rem;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        tbody tr { border-bottom: 1px solid #eef0f4; }
+        tbody tr:hover { background: #f5f7fb; }
+        tbody tr:nth-child(even) { background: #fafbfc; }
+        tbody tr:nth-child(even):hover { background: #f0f2f6; }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .badge-count {
+            background: #e8eaf0;
+            color: #555;
+            font-size: 0.75rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            margin-left: 0.5rem;
+            font-weight: 600;
+        }
+
         @media (max-width: 640px) {
             .form-grid, .response-grid, .period-cards { grid-template-columns: 1fr; }
         }
@@ -412,6 +453,31 @@
         <pre class="json-raw" id="jsonRaw"></pre>
     </div>
 
+    <div class="card" id="listCard">
+        <h2>Empleados Registrados <span class="badge-count" id="countBadge">0</span></h2>
+        <div id="tableContainer">
+            <div class="empty-state" id="emptyState">No hay empleados registrados aun.</div>
+            <div class="table-wrapper" id="tableWrapper" style="display:none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombres</th>
+                            <th>Apellidos</th>
+                            <th>Documento</th>
+                            <th>Cargo</th>
+                            <th>Salario</th>
+                            <th>F. Nacimiento</th>
+                            <th>F. Vinculacion</th>
+                            <th>Edad</th>
+                            <th>Vinculacion</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <div class="footer">
@@ -470,6 +536,7 @@
             }
 
             renderResponse(data);
+            loadList();
         } catch (err) {
             showAlert('No se pudo conectar al servidor. Verifique que la aplicacion este corriendo.', 'error');
         } finally {
@@ -531,6 +598,57 @@
         spinner.style.display = loading ? 'block' : 'none';
         btnText.textContent = loading ? 'Registrando...' : 'Registrar';
     }
+
+    async function loadList() {
+        try {
+            const res = await fetch('/api/empleados/listar');
+            if (!res.ok) return;
+            const list = await res.json();
+
+            const badge = document.getElementById('countBadge');
+            const empty = document.getElementById('emptyState');
+            const wrapper = document.getElementById('tableWrapper');
+            const tbody = document.getElementById('tableBody');
+
+            badge.textContent = list.length;
+
+            if (list.length === 0) {
+                empty.style.display = 'block';
+                wrapper.style.display = 'none';
+                return;
+            }
+
+            empty.style.display = 'none';
+            wrapper.style.display = 'block';
+            tbody.innerHTML = '';
+
+            list.forEach(e => {
+                const row = document.createElement('tr');
+                const fmt = n => '$' + Number(n).toLocaleString('es-CO');
+                const per = p => p.anios + 'a ' + p.meses + 'm ' + p.dias + 'd';
+                row.innerHTML =
+                    '<td>' + esc(e.nombres) + '</td>' +
+                    '<td>' + esc(e.apellidos) + '</td>' +
+                    '<td>' + esc(e.tipoDocumento + ' ' + e.numeroDocumento) + '</td>' +
+                    '<td>' + esc(e.cargo) + '</td>' +
+                    '<td>' + fmt(e.salario) + '</td>' +
+                    '<td>' + e.fechaNacimiento + '</td>' +
+                    '<td>' + e.fechaVinculacion + '</td>' +
+                    '<td>' + per(e.edad) + '</td>' +
+                    '<td>' + per(e.tiempoVinculacion) + '</td>';
+                tbody.appendChild(row);
+            });
+        } catch (err) { /* silenciar si el server no responde */ }
+    }
+
+    function esc(str) {
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+    }
+
+    // Cargar listado al abrir la pagina
+    loadList();
 </script>
 
 </body>

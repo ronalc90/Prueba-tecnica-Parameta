@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/empleados")
 public class EmpleadoController {
@@ -20,5 +22,10 @@ public class EmpleadoController {
     @GetMapping
     public EmpleadoResponse registrar(@Valid @ModelAttribute EmpleadoRequest req) {
         return service.registrar(req);
+    }
+
+    @GetMapping("/listar")
+    public List<EmpleadoResponse> listar() {
+        return service.listar();
     }
 }
